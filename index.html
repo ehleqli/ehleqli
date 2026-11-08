@@ -230,13 +230,14 @@ function shopMode() {
   const K = k => k + '_' + slug;
   let mine = Number(localStorage.getItem(K('mine'))) || null;
   let a0 = Number(localStorage.getItem(K('a0'))) || 1;
+  let bookedAt = 0, qLoaded = false;
   let notified = localStorage.getItem(K('nt')) === '1';
   const avg = () => (S && S.avg) || 12;
   const open = () => S && S.active && (!S.paidUntil || S.paidUntil >= today());
   const isBarber = () => user && S && S.ownerUid === user.uid;
 
   onSnapshot(sref, s => { S = s.exists() ? s.data() : null; render(); });
-  onSnapshot(query(qcol, orderBy('n')), s => { Q = s.docs.map(d => d.data()).filter(x => !x.cancelled); render(); });
+  onSnapshot(query(qcol, orderBy('n')), s => { Q = s.docs.map(d => d.data()).filter(x => !x.cancelled); qLoaded = true; render(); });
   authChanged = render;
 
   const idx = () => Q.findIndex(x => x.n === mine);
@@ -259,10 +260,11 @@ function shopMode() {
   function render() {
     if (!S) { $('shopname').textContent = 'المحل غير موجود'; $('book').classList.add('hide'); return; }
     $('shopname').textContent = S.name;
-    const i = idx(), ok = open();
+    let i = idx(); const ok = open();
+    if (mine && i < 0 && (!qLoaded || Date.now() - bookedAt < 8000)) i = Q.length;
     $('closed').classList.toggle('hide', ok);
     $('qinfo').textContent = Q.length ? 'في الدور دلوقتي ' + Q.length + ' زبون' : 'مفيش حد في الدور، تعالى على طول';
-    if (mine && i < 0) setMine(null, 1);
+    if (mine && i < 0 && qLoaded && Date.now() - bookedAt >= 8000) setMine(null, 1);
     const has = mine && i >= 0;
     $('book').classList.toggle('hide', !!has || !ok);
     $('tick').classList.toggle('hide', !has);
@@ -288,7 +290,7 @@ function shopMode() {
     $('bk').disabled = true;
     try {
       const ahead = Q.length, n = await addToQueue($('nm').value.trim());
-      setMine(n, ahead); $('nm').value = '';
+      bookedAt = Date.now(); setMine(n, ahead); $('nm').value = ''; setTimeout(render, 8500);
       if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
     } catch (e) { alert('حصلت مشكلة في الحجز، جرّب تاني'); }
     $('bk').disabled = false; render();
