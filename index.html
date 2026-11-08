@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>احلقلي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f2;--card:#fff;--ink:#12261d;--mut:#6b7f74;--g:#0e4a37;--g2:#7ef0b0;--org:#ee7a45;--dot:#b7c2bb;--soft:#e6eee9}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1612;--card:#17241d;--ink:#e8f2ec;--mut:#8da598;--g:#145c44;--dot:#3e5247;--soft:#1f3027}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Cairo',system-ui,sans-serif;min-height:100vh}
+.app{max-width:440px;margin:0 auto;padding-bottom:24px}
+header{background:var(--g);color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:0 0 22px 22px}
+header h1{margin:0;font-size:30px;font-weight:900}
+.live{font-size:14px;display:flex;align-items:center;gap:6px}
+.live i{width:9px;height:9px;border-radius:50%;background:var(--g2);animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.3}}
+.tabs{display:flex;gap:8px;padding:14px 16px 0}
+.tabs button{flex:1;padding:10px;border:0;border-radius:12px;background:var(--soft);color:var(--ink);font:700 15px 'Cairo',sans-serif}
+.tabs button.on{background:var(--g);color:#fff}
+.pad{padding:14px 16px}
+.shop{font-weight:700;color:var(--mut);margin:4px 4px 10px}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+.row{display:flex;gap:12px}
+.big{flex:1;border-radius:18px;padding:12px;text-align:center}
+.big small{display:block;font-weight:700;font-size:15px}
+.big b{font-size:56px;line-height:1.1;font-weight:900}
+.b1{background:var(--g);color:var(--g2)}.b1 small{color:#fff}
+.b2{background:var(--card);box-shadow:0 1px 4px #0001}
+.dots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.dot{width:22px;height:34px;position:relative}
+.dot:before{content:"";position:absolute;top:0;left:3px;width:16px;height:16px;border-radius:50%;background:var(--dot)}
+.dot:after{content:"";position:absolute;bottom:0;left:0;width:22px;height:16px;border-radius:10px 10px 6px 6px;background:var(--dot)}
+.dot.me:before,.dot.me:after{background:var(--org)}
+.dot.cur:before,.dot.cur:after{background:var(--g)}
+.eta{display:flex;align-items:center;justify-content:space-around}
+.eta span{font-size:18px;font-weight:700}.eta b{font-size:36px;display:block;line-height:1}
+.ring{position:relative;width:110px;height:110px}
+.ring svg{transform:rotate(-90deg)}
+.ring em{position:absolute;inset:0;display:grid;place-items:center;font:900 28px 'Cairo',sans-serif;font-style:normal}
+.avg{background:var(--g);color:#fff;border-radius:30px;padding:10px 16px;text-align:center;font-weight:700}
+.alert{background:var(--org);color:#fff;border-radius:18px;padding:14px;margin-bottom:12px;font-weight:900;font-size:19px;text-align:center}
+input{width:100%;padding:13px;border-radius:12px;border:2px solid var(--soft);background:var(--bg);color:var(--ink);font:700 16px 'Cairo',sans-serif;margin-bottom:10px}
+.btn{width:100%;padding:14px;border:0;border-radius:14px;background:var(--g);color:#fff;font:900 17px 'Cairo',sans-serif}
+.btn.sec{background:var(--soft);color:var(--ink);margin-top:8px}
+.btn.sm{width:auto;padding:8px 12px;font-size:14px;margin:4px 0 0 6px}
+.list div{display:flex;justify-content:space-between;padding:9px 4px;border-bottom:1px solid var(--soft);font-weight:700}
+.tag{color:var(--g2);background:var(--g);border-radius:8px;padding:0 8px;font-size:13px}
+.off{color:var(--org)}
+.hide{display:none}
+.note{color:var(--mut);font-size:13px;text-align:center;margin:6px 0}
+.lnk{direction:ltr;text-align:left;font-size:12px;word-break:break-all;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>احلقلي</h1><div class="live"><i></i>مباشر</div></header>
+
+<!-- صفحة رئيسية -->
+<main class="pad hide" id="land"><div class="card" style="text-align:center"><b style="font-size:20px">احلقلي</b><p class="note">افتح الرابط الخاص بمحلك لحجز دورك.</p></div></main>
+
+<!-- لوحة صاحب النظام -->
+<main class="pad hide" id="adm">
+  <div id="alogin" class="card">
+    <b>دخول صاحب النظام</b>
+    <input id="aem" type="email" placeholder="الإيميل" style="margin-top:10px">
+    <input id="apw" type="password" placeholder="الباسورد">
+    <button class="btn" id="alg">دخول</button><p class="note" id="aerr"></p>
+  </div>
+  <div id="apanel" class="hide">
+    <div class="card">
+      <b>إضافة محل جديد</b>
+      <input id="sn" placeholder="اسم المحل" style="margin-top:10px">
+      <input id="ss" placeholder="اسم الرابط بالإنجليزي مثل: elanaqa" dir="ltr">
+      <input id="se" type="email" placeholder="إيميل الحلاق" dir="ltr">
+      <input id="sp" type="text" placeholder="باسورد الحلاق (6 حروف على الأقل)" dir="ltr">
+      <input id="sd" type="number" value="30" placeholder="عدد أيام الاشتراك">
+      <button class="btn" id="sadd">إضافة المحل</button><p class="note" id="smsg"></p>
+    </div>
+    <div class="card"><div class="shop" style="margin:0 0 6px">المحلات</div><div id="shops"></div></div>
+    <button class="btn sec" id="alo">تسجيل خروج</button>
+  </div>
+</main>
+
+<!-- صفحة المحل -->
+<div id="shopv" class="hide">
+<div class="tabs"><button id="t1" class="on">أنا زبون</button><button id="t2">أنا الحلاق</button></div>
+<main class="pad" id="cust">
+  <div class="shop" id="shopname"></div>
+  <div id="closed" class="card hide" style="text-align:center"><b>الحجز متوقف حاليًا</b><p class="note">تواصل مع المحل مباشرة.</p></div>
+  <div id="book" class="card">
+    <b style="font-size:18px">احجز دورك من البيت</b>
+    <p class="note" style="text-align:right">هتاخد رقم وتتابع دورك، وهنبلغك لما يقرب.</p>
+    <input id="nm" placeholder="اسمك" maxlength="20">
+    <button class="btn" id="bk">احجز دلوقتي</button>
+    <p class="note" id="qinfo"></p>
+  </div>
+  <div id="tick" class="hide">
+    <div id="al" class="alert hide"></div>
+    <div class="row">
+      <div class="big b1"><small>قدّامك</small><b id="ah">0</b></div>
+      <div class="big b2"><small>رقمك</small><b id="mn">0</b></div>
+    </div>
+    <div class="card" style="margin-top:12px"><div class="dots" id="dots"></div></div>
+    <div class="card eta">
+      <span>دورك بعد<b id="mins">0</b>دقيقة</span>
+      <div class="ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="48" fill="none" stroke="var(--soft)" stroke-width="9"/><circle id="pr" cx="55" cy="55" r="48" fill="none" stroke="var(--g)" stroke-width="9" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6"/></svg><em id="rm">0</em></div>
+    </div>
+    <div class="avg" id="avg"></div>
+    <button class="btn sec" id="cx">إلغاء الحجز</button>
+  </div>
+</main>
+<main class="pad hide" id="barb">
+  <div id="login" class="card">
+    <b>دخول الحلاق</b>
+    <input id="em" type="email" placeholder="الإيميل" style="margin-top:10px">
+    <input id="pw" type="password" placeholder="الباسورد">
+    <button class="btn" id="lg">دخول</button><p class="note" id="lerr"></p>
+  </div>
+  <div id="panel" class="hide">
+    <div class="card">
+      <div class="shop" style="margin:0">اللي على الكرسي دلوقتي</div>
+      <div style="font-size:30px;font-weight:900" id="cur">لا أحد</div>
+      <button class="btn" id="nx" style="margin-top:10px">خلّص وناديلي التالي</button>
+    </div>
+    <div class="card">
+      <input id="wn" placeholder="اسم زبون جه المحل بدون حجز" maxlength="20">
+      <button class="btn sec" id="wk" style="margin-top:0">أضفه للدور</button>
+      <div class="shop" style="margin:14px 4px 4px">متوسط وقت الحلاقة (دقيقة)</div>
+      <input id="av" type="number" min="5" max="60">
+    </div>
+    <div class="card"><div class="shop" style="margin:0 0 6px">الدور (<span id="cnt">0</span>)</div><div class="list" id="lst"></div></div>
+    <button class="btn sec" id="lo">تسجيل خروج</button>
+  </div>
+</main>
+</div>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore,doc,collection,onSnapshot,runTransaction,query,orderBy,updateDoc,deleteDoc,setDoc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* ===== الصق إعدادات Firebase هنا ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyC9u5-r_5XpLpf1ShUC97MVIfuPHe6SW5o",
+  authDomain: "ehleqli-e2b9b.firebaseapp.com",
+  projectId: "ehleqli-e2b9b",
+  appId: "1:1086272537984:web:78db42d3e410609d38ed65"
+};
+const ADMIN_EMAIL = "amedsalah87@gmail.com"; // إيميل صاحب النظام (إنت)
+/* ===================================== */
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app), auth = getAuth(app);
+const $ = i => document.getElementById(i);
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const iso = d => d.toISOString().slice(0, 10);
+const today = () => iso(new Date());
+const P = new URLSearchParams(location.search);
+const slug = (P.get('s') || '').toLowerCase();
+let user = null;
+
+onAuthStateChanged(auth, u => { user = u; authChanged(); });
+let authChanged = () => {};
+
+/* ---------------- صفحة رئيسية ---------------- */
+if (P.has('admin')) adminMode();
+else if (slug) shopMode();
+else $('land').classList.remove('hide');
+
+/* ---------------- لوحة صاحب النظام ---------------- */
+function adminMode() {
+  $('adm').classList.remove('hide');
+  const isAdmin = () => user && user.email === ADMIN_EMAIL;
+  let unsub = null;
+  authChanged = () => {
+    $('alogin').classList.toggle('hide', !!isAdmin());
+    $('apanel').classList.toggle('hide', !isAdmin());
+    if (isAdmin() && !unsub) unsub = onSnapshot(collection(db, 'shops'), s => listShops(s.docs));
+    if (!isAdmin() && unsub) { unsub(); unsub = null; }
+  };
+  $('alg').onclick = async () => {
+    $('aerr').textContent = '';
+    try { await signInWithEmailAndPassword(auth, $('aem').value, $('apw').value); }
+    catch (e) { $('aerr').textContent = 'الإيميل أو الباسورد غلط'; }
+  };
+  $('alo').onclick = () => signOut(auth);
+  $('sadd').onclick = async () => {
+    const name = $('sn').value.trim(), s = $('ss').value.trim().toLowerCase();
+    const em = $('se').value.trim(), pw = $('sp').value, days = parseInt($('sd').value, 10) || 30;
+    const m = $('smsg');
+    if (!name || !/^[a-z0-9-]{3,30}$/.test(s) || !em || pw.length < 6) { m.textContent = 'راجع البيانات: الرابط حروف إنجليزي وأرقام فقط'; return; }
+    $('sadd').disabled = true; m.textContent = 'جاري الإضافة...';
+    try {
+      if ((await getDoc(doc(db, 'shops', s))).exists()) throw new Error('exists');
+      const sec = initializeApp(firebaseConfig, 'sec' + Date.now()), sa = getAuth(sec);
+      const cred = await createUserWithEmailAndPassword(sa, em, pw);
+      const uid = cred.user.uid; await signOut(sa);
+      const until = new Date(); until.setDate(until.getDate() + days);
+      await setDoc(doc(db, 'shops', s), {name, avg: 12, next: 1, active: true, ownerUid: uid, paidUntil: iso(until)});
+      m.textContent = 'تمت الإضافة ✓';
+      ['sn', 'ss', 'se', 'sp'].forEach(i => $(i).value = '');
+    } catch (e) { m.textContent = e.message === 'exists' ? 'الرابط ده مستخدم' : 'حصلت مشكلة: ' + (e.code || e.message); }
+    $('sadd').disabled = false;
+  };
+  const base = location.origin + location.pathname;
+  function listShops(docs) {
+    $('shops').innerHTML = docs.map(d => { const x = d.data(); const exp = x.paidUntil < today();
+      return '<div class="card" style="box-shadow:none;background:var(--bg)"><b>' + esc(x.name) + '</b> ' +
+      (!x.active ? '<span class="off">موقوف</span>' : exp ? '<span class="off">منتهي</span>' : '<span class="tag">شغال</span>') +
+      '<div class="note" style="text-align:right">ينتهي: ' + x.paidUntil + '</div><div class="lnk">' + base + '?s=' + d.id + '</div>' +
+      '<button class="btn sm" data-a="renew" data-id="' + d.id + '">تجديد 30 يوم</button>' +
+      '<button class="btn sm sec" data-a="tog" data-id="' + d.id + '">' + (x.active ? 'إيقاف' : 'تشغيل') + '</button></div>'; }).join('') || '<div class="note">لسه مفيش محلات</div>';
+  }
+  $('shops').onclick = async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const ref = doc(db, 'shops', b.dataset.id), x = (await getDoc(ref)).data();
+    if (b.dataset.a === 'tog') await updateDoc(ref, {active: !x.active});
+    else { const d = new Date(x.paidUntil > today() ? x.paidUntil : today()); d.setDate(d.getDate() + 30); await updateDoc(ref, {paidUntil: iso(d), active: true}); }
+  };
+}
+
+/* ---------------- صفحة المحل ---------------- */
+function shopMode() {
+  $('shopv').classList.remove('hide');
+  const sref = doc(db, 'shops', slug), qcol = collection(db, 'shops', slug, 'queue');
+  let Q = [], S = null;
+  const K = k => k + '_' + slug;
+  let mine = Number(localStorage.getItem(K('mine'))) || null;
+  let a0 = Number(localStorage.getItem(K('a0'))) || 1;
+  let notified = localStorage.getItem(K('nt')) === '1';
+  const avg = () => (S && S.avg) || 12;
+  const open = () => S && S.active && (!S.paidUntil || S.paidUntil >= today());
+  const isBarber = () => user && S && S.ownerUid === user.uid;
+
+  onSnapshot(sref, s => { S = s.exists() ? s.data() : null; render(); });
+  onSnapshot(query(qcol, orderBy('n')), s => { Q = s.docs.map(d => d.data()).filter(x => !x.cancelled); render(); });
+  authChanged = render;
+
+  const idx = () => Q.findIndex(x => x.n === mine);
+  function setMine(n, ahead) {
+    mine = n; a0 = Math.max(1, ahead); notified = false;
+    localStorage.setItem(K('mine'), n || ''); localStorage.setItem(K('a0'), a0); localStorage.setItem(K('nt'), '0');
+  }
+  async function addToQueue(name) {
+    return runTransaction(db, async t => {
+      const s = await t.get(sref), n = s.data().next;
+      t.update(sref, {next: n + 1});
+      t.set(doc(qcol, String(n)), {n, name: name || 'زبون', cancelled: false});
+      return n;
+    });
+  }
+  function notify(txt) {
+    try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {}
+    try { if (window.Notification && Notification.permission === 'granted') new Notification(S.name, {body: txt}); } catch (e) {}
+  }
+  function render() {
+    if (!S) { $('shopname').textContent = 'المحل غير موجود'; $('book').classList.add('hide'); return; }
+    $('shopname').textContent = S.name;
+    const i = idx(), ok = open();
+    $('closed').classList.toggle('hide', ok);
+    $('qinfo').textContent = Q.length ? 'في الدور دلوقتي ' + Q.length + ' زبون' : 'مفيش حد في الدور، تعالى على طول';
+    if (mine && i < 0) setMine(null, 1);
+    const has = mine && i >= 0;
+    $('book').classList.toggle('hide', !!has || !ok);
+    $('tick').classList.toggle('hide', !has);
+    if (has) {
+      const m = i * avg();
+      $('ah').textContent = i; $('mn').textContent = mine; $('mins').textContent = m; $('rm').textContent = m;
+      $('avg').textContent = 'معدّل الحلاقة = ' + avg() + ' دقيقة';
+      $('pr').setAttribute('stroke-dashoffset', String(301.6 * (1 - Math.max(0, Math.min(1, 1 - i / a0)))));
+      $('dots').innerHTML = Array.from({length: i + 1}, (_, k) => '<div class="dot ' + (k === i ? 'me' : k === 0 ? 'cur' : '') + '"></div>').join('');
+      const txt = i === 0 ? 'دورك دلوقتي! ادخل الكرسي' : 'دورك قرب! قدامك واحد بس، روح المحل دلوقتي';
+      $('al').textContent = txt; $('al').classList.toggle('hide', i > 1);
+      if (i <= 1 && !notified) { notified = true; localStorage.setItem(K('nt'), '1'); notify(txt); }
+    }
+    $('login').classList.toggle('hide', !!user);
+    $('panel').classList.toggle('hide', !isBarber());
+    if (user && !isBarber()) $('lerr').textContent = 'الحساب ده مش حلاق المحل ده';
+    $('cur').textContent = Q.length ? 'رقم ' + Q[0].n + ' - ' + Q[0].name : 'لا أحد';
+    $('cnt').textContent = Q.length;
+    $('lst').innerHTML = Q.map((x, k) => '<div><span>' + x.n + ' - ' + esc(x.name) + '</span>' + (k === 0 ? '<span class="tag">على الكرسي</span>' : '<span>' + k * avg() + ' د</span>') + '</div>').join('') || '<div>الدور فاضي</div>';
+    if (document.activeElement !== $('av')) $('av').value = avg();
+  }
+  $('bk').onclick = async () => {
+    $('bk').disabled = true;
+    try {
+      const ahead = Q.length, n = await addToQueue($('nm').value.trim());
+      setMine(n, ahead); $('nm').value = '';
+      if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+    } catch (e) { alert('حصلت مشكلة في الحجز، جرّب تاني'); }
+    $('bk').disabled = false; render();
+  };
+  $('cx').onclick = async () => {
+    if (!mine) return;
+    try { await updateDoc(doc(qcol, String(mine)), {cancelled: true}); } catch (e) {}
+    setMine(null, 1); render();
+  };
+  $('lg').onclick = async () => {
+    $('lerr').textContent = '';
+    try { await signInWithEmailAndPassword(auth, $('em').value, $('pw').value); }
+    catch (e) { $('lerr').textContent = 'الإيميل أو الباسورد غلط'; }
+  };
+  $('lo').onclick = () => { signOut(auth); $('lerr').textContent = ''; };
+  $('nx').onclick = async () => { if (Q.length) await deleteDoc(doc(qcol, String(Q[0].n))); };
+  $('wk').onclick = async () => { await addToQueue($('wn').value.trim()); $('wn').value = ''; };
+  $('av').onchange = async () => { const v = parseInt($('av').value, 10); if (v > 0) await updateDoc(sref, {avg: v}); };
+  const tab = n => { $('cust').classList.toggle('hide', n !== 1); $('barb').classList.toggle('hide', n !== 2); $('t1').classList.toggle('on', n === 1); $('t2').classList.toggle('on', n === 2); };
+  $('t1').onclick = () => tab(1); $('t2').onclick = () => tab(2);
+}
+</script>
+</body>
+</html>
