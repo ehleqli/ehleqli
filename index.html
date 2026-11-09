@@ -139,7 +139,7 @@ input{width:100%;padding:13px;border-radius:12px;border:2px solid var(--soft);ba
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,doc,collection,onSnapshot,runTransaction,query,orderBy,updateDoc,deleteDoc,setDoc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,doc,collection,onSnapshot,runTransaction,query,orderBy,updateDoc,deleteDoc,setDoc,getDoc,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* ===== الصق إعدادات Firebase هنا ===== */
@@ -212,10 +212,19 @@ function adminMode() {
       (!x.active ? '<span class="off">موقوف</span>' : exp ? '<span class="off">منتهي</span>' : '<span class="tag">شغال</span>') +
       '<div class="note" style="text-align:right">ينتهي: ' + x.paidUntil + '</div><div class="note" style="text-align:right">رابط الزبائن:</div><div class="lnk">' + base + '?s=' + d.id + '</div><div class="note" style="text-align:right">رابط الحلاق:</div><div class="lnk">' + base + '?s=' + d.id + '&barber</div>' +
       '<button class="btn sm" data-a="renew" data-id="' + d.id + '">تجديد 30 يوم</button>' +
-      '<button class="btn sm sec" data-a="tog" data-id="' + d.id + '">' + (x.active ? 'إيقاف' : 'تشغيل') + '</button></div>'; }).join('') || '<div class="note">لسه مفيش محلات</div>';
+      '<button class="btn sm sec" data-a="tog" data-id="' + d.id + '">' + (x.active ? 'إيقاف' : 'تشغيل') + '</button><button class="btn sm sec" style="color:#c0392b" data-a="del" data-id="' + d.id + '">حذف</button></div>'; }).join('') || '<div class="note">لسه مفيش محلات</div>';
   }
   $('shops').onclick = async e => {
     const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.a === 'del') {
+      if (!confirm('متأكد إنك عاوز تحذف المحل ده نهائيًا مع كل حجوزاته؟')) return;
+      try {
+        const qs = await getDocs(collection(db, 'shops', b.dataset.id, 'queue'));
+        for (const d of qs.docs) await deleteDoc(d.ref);
+        await deleteDoc(doc(db, 'shops', b.dataset.id));
+      } catch (err) { alert('حصلت مشكلة في الحذف: ' + (err.code || err.message)); }
+      return;
+    }
     const ref = doc(db, 'shops', b.dataset.id), x = (await getDoc(ref)).data();
     if (b.dataset.a === 'tog') await updateDoc(ref, {active: !x.active});
     else { const d = new Date(x.paidUntil > today() ? x.paidUntil : today()); d.setDate(d.getDate() + 30); await updateDoc(ref, {paidUntil: iso(d), active: true}); }
