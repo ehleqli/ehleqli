@@ -234,7 +234,7 @@ function shopMode() {
   let notified = localStorage.getItem(K('nt')) === '1';
   const avg = () => (S && S.avg) || 12;
   const open = () => S && S.active && (!S.paidUntil || S.paidUntil >= today());
-  const isBarber = () => user && S && S.ownerUid === user.uid;
+  const isBarber = () => user && S && (S.ownerUid === user.uid || user.email === ADMIN_EMAIL);
 
   onSnapshot(sref, s => { S = s.exists() ? s.data() : null; render(); });
   onSnapshot(query(qcol, orderBy('n')), s => { Q = s.docs.map(d => d.data()).filter(x => !x.cancelled); qLoaded = true; render(); });
@@ -259,7 +259,7 @@ function shopMode() {
   }
   function render() {
     if (!S) { $('shopname').textContent = 'المحل غير موجود'; $('book').classList.add('hide'); return; }
-    $('shopname').textContent = S.name;
+    $('shopname').textContent = S.name + ' (v2)';
     let i = idx(); const ok = open();
     if (mine && i < 0 && (!qLoaded || Date.now() - bookedAt < 8000)) i = Q.length;
     $('closed').classList.toggle('hide', ok);
@@ -278,7 +278,7 @@ function shopMode() {
       $('al').textContent = txt; $('al').classList.toggle('hide', i > 1);
       if (i <= 1 && !notified) { notified = true; localStorage.setItem(K('nt'), '1'); notify(txt); }
     }
-    $('login').classList.toggle('hide', !!user);
+    $('login').classList.toggle('hide', !!isBarber());
     $('panel').classList.toggle('hide', !isBarber());
     if (user && !isBarber()) $('lerr').textContent = 'الحساب ده مش حلاق المحل ده';
     $('cur').textContent = Q.length ? 'رقم ' + Q[0].n + ' - ' + Q[0].name : 'لا أحد';
