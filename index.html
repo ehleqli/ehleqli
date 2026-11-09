@@ -256,17 +256,31 @@ function shopMode() {
     mine = n; a0 = Math.max(1, ahead); notified = false;
     localStorage.setItem(K('mine'), n || ''); localStorage.setItem(K('a0'), a0); localStorage.setItem(K('nt'), '0');
   }
-  async function addToQueue(name) {
+  async function addToQueue(name, sub) {
     return runTransaction(db, async t => {
       const s = await t.get(sref), n = s.data().next;
       t.update(sref, {next: n + 1});
-      t.set(doc(qcol, String(n)), {n, name: name || 'زبون', cancelled: false});
+      t.set(doc(qcol, String(n)), {n, name: name || 'زبون', cancelled: false, sub: sub || null});
       return n;
     });
   }
+  const VAPID_PUBLIC = "BFAGYU2C1D48ABirMRvfdw6_Qz4N_9FLVd6UAMwwkedwpBxha2rllwewRbuXYrNihlcfSqNWnf_omMLJfDhxpDw";
+  const u8 = b => { const p = '='.repeat((4 - b.length % 4) % 4); const r = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+  async function getSub() {
+    try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !window.Notification) return null;
+      if ((await Notification.requestPermission()) !== 'granted') return null;
+      const reg = await navigator.serviceWorker.register('sw.js');
+      await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: u8(VAPID_PUBLIC)});
+      try { const c = await caches.open('ehleqli'); await c.put(location.origin + '/ehleqli-last', new Response(location.href)); } catch (e) {}
+      return JSON.stringify(sub);
+    } catch (e) { return null; }
+  }
   function notify(txt) {
     try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {}
-    try { if (window.Notification && Notification.permission === 'granted') new Notification(S.name, {body: txt}); } catch (e) {}
+    try { if (window.Notification && Notification.permission === 'granted') new Notification(S.name, {body: txt, tag: 'turn'}); } catch (e) {}
   }
   function render() {
     if (!S) { $('shopname').textContent = 'المحل غير موجود'; $('book').classList.add('hide'); return; }
@@ -300,9 +314,8 @@ function shopMode() {
   $('bk').onclick = async () => {
     $('bk').disabled = true;
     try {
-      const ahead = Q.length, n = await addToQueue($('nm').value.trim());
+      const ahead = Q.length, sub = await getSub(), n = await addToQueue($('nm').value.trim(), sub);
       bookedAt = Date.now(); setMine(n, ahead); $('nm').value = ''; setTimeout(render, 8500);
-      if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
     } catch (e) { alert('حصلت مشكلة في الحجز، جرّب تاني'); }
     $('bk').disabled = false; render();
   };
