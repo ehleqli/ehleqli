@@ -137,6 +137,7 @@ input{width:100%;padding:13px;border-radius:12px;border:2px solid var(--soft);ba
 </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore,doc,collection,onSnapshot,runTransaction,query,orderBy,updateDoc,deleteDoc,setDoc,getDoc,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -206,16 +207,43 @@ function adminMode() {
     $('sadd').disabled = false;
   };
   const base = location.origin + location.pathname;
+  async function showQR(id, name) {
+    const url = base + '?s=' + id;
+    try { await document.fonts.load('700 30px Cairo'); await document.fonts.load('900 52px Cairo'); } catch (e) {}
+    const tmp = document.createElement('div');
+    new QRCode(tmp, {text: url, width: 480, height: 480, correctLevel: QRCode.CorrectLevel.M});
+    const src = tmp.querySelector('canvas');
+    const c = document.createElement('canvas'); c.width = 640; c.height = 820;
+    const g = c.getContext('2d');
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, 640, 820);
+    g.fillStyle = '#0e4a37'; g.fillRect(0, 0, 640, 120);
+    g.textAlign = 'center';
+    g.fillStyle = '#ffffff'; g.font = '900 52px Cairo, sans-serif'; g.fillText('احلقلي', 320, 78);
+    g.fillStyle = '#12261d'; g.font = '700 40px Cairo, sans-serif'; g.fillText(name, 320, 190);
+    g.drawImage(src, 80, 225, 480, 480);
+    g.fillStyle = '#0e4a37'; g.font = '700 30px Cairo, sans-serif'; g.fillText('صوّر الكود واحجز دورك من البيت', 320, 772);
+    const data = c.toDataURL('image/png');
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:#000a;z-index:99;overflow:auto;padding:16px;display:flex;justify-content:center;align-items:flex-start';
+    ov.innerHTML = '<div class="card" style="max-width:420px;width:100%;text-align:center"><img src="' + data + '" style="width:100%;border-radius:12px"><p class="note">اضغط مطوّلًا على الصورة واحفظها، أو استخدم الزرار</p><a class="btn" style="display:block;text-decoration:none;text-align:center" download="qr-' + id + '.png" href="' + data + '">تحميل الصورة</a><button class="btn sec" id="qrx">إغلاق</button></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('#qrx').onclick = () => ov.remove();
+  }
   function listShops(docs) {
     $('shops').innerHTML = docs.map(d => { const x = d.data(); const exp = x.paidUntil < today();
       return '<div class="card" style="box-shadow:none;background:var(--bg)"><b>' + esc(x.name) + '</b> ' +
       (!x.active ? '<span class="off">موقوف</span>' : exp ? '<span class="off">منتهي</span>' : '<span class="tag">شغال</span>') +
       '<div class="note" style="text-align:right">ينتهي: ' + x.paidUntil + '</div><div class="note" style="text-align:right">رابط الزبائن:</div><div class="lnk">' + base + '?s=' + d.id + '</div><div class="note" style="text-align:right">رابط الحلاق:</div><div class="lnk">' + base + '?s=' + d.id + '&barber</div>' +
       '<button class="btn sm" data-a="renew" data-id="' + d.id + '">تجديد 30 يوم</button>' +
-      '<button class="btn sm sec" data-a="tog" data-id="' + d.id + '">' + (x.active ? 'إيقاف' : 'تشغيل') + '</button><button class="btn sm sec" style="color:#c0392b" data-a="del" data-id="' + d.id + '">حذف</button></div>'; }).join('') || '<div class="note">لسه مفيش محلات</div>';
+      '<button class="btn sm sec" data-a="tog" data-id="' + d.id + '">' + (x.active ? 'إيقاف' : 'تشغيل') + '</button><button class="btn sm sec" data-a="qr" data-id="' + d.id + '">QR</button><button class="btn sm sec" style="color:#c0392b" data-a="del" data-id="' + d.id + '">حذف</button></div>'; }).join('') || '<div class="note">لسه مفيش محلات</div>';
   }
   $('shops').onclick = async e => {
     const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.a === 'qr') {
+      const sd = await getDoc(doc(db, 'shops', b.dataset.id));
+      showQR(b.dataset.id, sd.exists() ? sd.data().name : b.dataset.id);
+      return;
+    }
     if (b.dataset.a === 'del') {
       if (!confirm('متأكد إنك عاوز تحذف المحل ده نهائيًا مع كل حجوزاته؟')) return;
       try {
